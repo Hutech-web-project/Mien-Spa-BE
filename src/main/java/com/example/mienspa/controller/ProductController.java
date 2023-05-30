@@ -186,9 +186,9 @@ public class ProductController {
 		}
 	}
 
-	@DeleteMapping(value = "/Product")
+	@DeleteMapping(value = "/Product/{id}")
 //	@PreAuthorize("hasRole('MODERATOR') and hasRole('PRODUCT') or hasRole('ADMIN')")
-	public ResponseEntity<?> deleteProduct(@RequestBody String id) {
+	public ResponseEntity<?> deleteProduct(@PathVariable("id") String id) {
 		try {
 			if (service.getById(id) != null) {
 				Product entity = service.getById(id);
