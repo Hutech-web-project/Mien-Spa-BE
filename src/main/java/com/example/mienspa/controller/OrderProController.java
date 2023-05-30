@@ -151,7 +151,7 @@ public class OrderProController {
 				}
 				return new ResponseEntity<>(dto, responseHeaders, HttpStatus.OK);
 			}
-			return new ResponseEntity<>("This product order does not exist", responseHeaders, HttpStatus.ACCEPTED);
+			return new ResponseEntity<>("This product order does not exist", responseHeaders, HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -182,7 +182,7 @@ public class OrderProController {
 				}			
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.CREATED);
 			}else {
-				return new ResponseEntity<>("Fail",responseHeaders,HttpStatus.ACCEPTED);
+				return new ResponseEntity<>("Fail",responseHeaders,HttpStatus.NOT_FOUND);
 			}	
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -215,11 +215,11 @@ public class OrderProController {
 						return new ResponseEntity<>("Success", responseHeaders, HttpStatus.OK);
 					}
 				}else {
-					return new ResponseEntity<>("Fail",responseHeaders,HttpStatus.ACCEPTED);
+					return new ResponseEntity<>("Fail",responseHeaders,HttpStatus.NOT_FOUND);
 				}
 				
 			}
-			return  new ResponseEntity<>("This product order does not exist", responseHeaders, HttpStatus.ACCEPTED);
+			return  new ResponseEntity<>("This product order does not exist", responseHeaders, HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -256,7 +256,7 @@ public class OrderProController {
 				service.delete(entity);			
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.OK);
 			}else {
-				return  new ResponseEntity<>("This product order does not exist", responseHeaders, HttpStatus.ACCEPTED);
+				return  new ResponseEntity<>("This product order does not exist", responseHeaders, HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);

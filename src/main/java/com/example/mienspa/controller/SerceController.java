@@ -124,7 +124,7 @@ public class SerceController {
 					entityRequest.setSeId(id);
 					Serce entity = service.create(entityRequest);
 					SerceDTO dtoReponse = modelMapper.map(entity, SerceDTO.class);
-					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.ACCEPTED);
+					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.NOT_FOUND);
 				} else {				
 					SerceDTO dto = mapper.readValue(json, SerceDTO.class);
 					//delete old image
@@ -143,11 +143,11 @@ public class SerceController {
 					entityRequest.setSeId(id);
 					Serce entity = service.create(entityRequest);
 					SerceDTO dtoReponse = modelMapper.map(entity, SerceDTO.class);
-					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.ACCEPTED);
+					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.NOT_FOUND);
 
 				}
 			}else {
-				return new ResponseEntity<>("This service does not exist", responseHeaders, HttpStatus.ACCEPTED);
+				return new ResponseEntity<>("This service does not exist", responseHeaders, HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);

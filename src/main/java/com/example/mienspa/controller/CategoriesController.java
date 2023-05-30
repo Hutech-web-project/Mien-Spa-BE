@@ -109,7 +109,7 @@ public class CategoriesController {
 					if((checkCateName != null && checkCateID.getCateName().equals(entityRequest.getCateName())) || checkCateName == null) {
 						entityRequest.setUpdatedAt(date);
 						service.create(entityRequest);
-						return new ResponseEntity<>("Success",responseHeaders,HttpStatus.CREATED);
+						return new ResponseEntity<>("Success",responseHeaders,HttpStatus.OK);
 					}else {
 						return new ResponseEntity<>("Category name can't duplicate",responseHeaders,HttpStatus.NOT_FOUND);
 					}

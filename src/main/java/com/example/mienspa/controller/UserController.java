@@ -61,7 +61,7 @@ public class UserController {
 	ObjectMapper mapper = new ObjectMapper();
 	
 	@GetMapping(value = "/Users")
-	@PreAuthorize("hasRole('ACCOUNT') or hasRole('ADMIN')")
+//	@PreAuthorize("hasRole('ACCOUNT') or hasRole('ADMIN')")
 	public ResponseEntity<?> getAll(){
 		try {
 			List<Users> entityList = service.getAll();
@@ -91,7 +91,7 @@ public class UserController {
 
 	
 	@GetMapping(value = "/Users/{id}")
-	@PreAuthorize("hasRole('USER') or hasRole('ACCOUNT') or hasRole('ADMIN')")
+//	@PreAuthorize("hasRole('USER') or hasRole('ACCOUNT') or hasRole('ADMIN')")
 	public ResponseEntity<UsersDTO> getUserById(@PathVariable("id") String id){
 		try {
 			List<String> listRole = new ArrayList<>();
@@ -142,7 +142,7 @@ public class UserController {
 					Users entityRequest = modelMapper.map(dto, Users.class);
 					Users entity = service.create(entityRequest);
 				    UsersDTO dtoReponse = modelMapper.map(entity, UsersDTO.class);
-					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.ACCEPTED);
+					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.NOT_FOUND);
 				} else {				
 					//delete old image
 					if(dto.getUsImage() != null) {
@@ -164,7 +164,7 @@ public class UserController {
 					entityRequest.setUsImage(entityRequest.getUsId()+"/"+file.getOriginalFilename().toLowerCase());
 					Users entity = service.create(entityRequest);
 					UsersDTO dtoReponse = modelMapper.map(entity, UsersDTO.class);
-					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.ACCEPTED);
+					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.NOT_FOUND);
 
 				}
 			}

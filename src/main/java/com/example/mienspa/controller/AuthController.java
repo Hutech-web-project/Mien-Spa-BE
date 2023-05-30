@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,115 +148,38 @@ public class AuthController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
-//		if (testUsingStrictRegex(signUpRequest.getEmail())) {
-		if(true) {
+		if (testUsingStrictRegex(signUpRequest.getEmail())) {
 			if (userService.checkMail(signUpRequest.getEmail())) {
 				return new ResponseEntity<>("Error: Email is already in use!", responseHeaders, HttpStatus.NOT_FOUND);
 			}
-
-			// Create new user's account
 			try {
-				Users user = new Users(idUserIentity(), signUpRequest.getUsername(),
-						encoder.encode(signUpRequest.getPassword()), signUpRequest.getEmail());
-				Set<String> strRoles = signUpRequest.getRole();
-				Date date = Date.from(Instant.now());
-				Set<UserRole> roles = new HashSet<>();
-				user.setIsAdmin(true);
-				if (strRoles == null) {
+				if(signUpRequest.getEmail() != null && signUpRequest.getPassword()!= null && signUpRequest.getUsername()!= null) {
+					Users user = new Users(idUserIentity(), signUpRequest.getUsername(),
+							encoder.encode(signUpRequest.getPassword()), signUpRequest.getEmail());
+					Date date = Date.from(Instant.now());
+					Set<UserRole> roles = new HashSet<>();
 					user.setIsAdmin(false);
 					UserRole userRole = new UserRole();
 					userRole.setUsers(user);
 					userRole.setRole(roleService.getByName(ERole.ROLE_USER.toString()));
 					roles.add(userRole);
-				} else {
-					strRoles.forEach(role -> {
-						switch (role) {
-						case "ROLE_USER":
-							user.setIsAdmin(false);
-							UserRole userRole = new UserRole();
-							userRole.setUsers(user);
-							userRole.setRole(roleService.getByName(ERole.ROLE_USER.toString()));
-							roles.add(userRole);
-							break;
-						case "ROLE_ADMIN":
-							user.setIsAdmin(true);
-							UserRole adminRole = new UserRole();
-							adminRole.setUsers(user);
-							adminRole.setRole(roleService.getByName(ERole.ROLE_ADMIN.toString()));
-							roles.add(adminRole);
-							break;
-						case "ROLE_MODERATOR":
-							user.setIsAdmin(true);
-
-							UserRole modRole = new UserRole();
-							modRole.setUsers(user);
-							modRole.setRole(roleService.getByName(ERole.ROLE_MODERATOR.toString()));
-							roles.add(modRole);
-							break;
-						case "ROLE_CATEGORY":
-							UserRole cateRole = new UserRole();
-							cateRole.setUsers(user);
-							cateRole.setRole(roleService.getByName(ERole.ROLE_CATEGORY.toString()));
-							roles.add(cateRole);
-							break;
-						case "ROLE_ORDER_SERVICE":
-							user.setIsAdmin(true);
-							UserRole orSerRole = new UserRole();
-							orSerRole.setUsers(user);
-							orSerRole.setRole(roleService.getByName(ERole.ROLE_ORDER_SERVICE.toString()));
-							roles.add(orSerRole);
-							break;
-						case "ROLE_ORDER_PRODUCT":
-							user.setIsAdmin(true);
-
-							UserRole orProRole = new UserRole();
-							orProRole.setUsers(user);
-							orProRole.setRole(roleService.getByName(ERole.ROLE_ORDER_PRODUCT.toString()));
-							roles.add(orProRole);
-							break;
-						case "ROLE_PRODUCT":
-							user.setIsAdmin(true);
-
-							UserRole proRole = new UserRole();
-							proRole.setUsers(user);
-							proRole.setRole(roleService.getByName(ERole.ROLE_PRODUCT.toString()));
-							roles.add(proRole);
-							break;
-						case "ROLE_SERVICE":
-							user.setIsAdmin(true);
-
-							UserRole serRole = new UserRole();
-							serRole.setUsers(user);
-							serRole.setRole(roleService.getByName(ERole.ROLE_SERVICE.toString()));
-							roles.add(serRole);
-							break;
-						case "ROLE_ACCOUNT":
-							user.setIsAdmin(true);
-							UserRole accRole = new UserRole();
-							accRole.setUsers(user);
-							accRole.setRole(roleService.getByName(ERole.ROLE_ACCOUNT.toString()));
-							roles.add(accRole);
-							break;
-						default:
-							break;
-						}
-					});
+					userService.create(user);
+					for (UserRole role : roles) {
+						userRoleService.create(role);
+					}
+					user.setCreatedAt(date);
+					user.setUserRoles(roles);
+					userService.create(user);
+					return new ResponseEntity<>("Successfully", responseHeaders, HttpStatus.CREATED);
+				}else {
+					return new ResponseEntity<>("Fail", responseHeaders, HttpStatus.NOT_FOUND);
 				}
-				userService.create(user);
-				for (UserRole userRole : roles) {
-					userRoleService.create(userRole);
-				}
-				user.setCreatedAt(date);
-				user.setUserRoles(roles);
-				userService.create(user);
 
-				return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return new ResponseEntity<>(null, responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+			}		
 		}else {
-			return new ResponseEntity<>("Invalid email", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>("Invalid email", responseHeaders, HttpStatus.NOT_FOUND);
 		}
 		
 	}
@@ -298,13 +222,12 @@ public class AuthController {
 		return id;
 	}
 
-//	@Test
-//	public boolean testUsingStrictRegex(String emai) {;
-//	    String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
-//	        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-//	    return Pattern.compile(regexPattern)
-//	    	      .matcher(emai)
-//	    	      .matches();
-//	}
+	public boolean testUsingStrictRegex(String emai) {;
+	    String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" 
+	        + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+	    return Pattern.compile(regexPattern)
+	    	      .matcher(emai)
+	    	      .matches();
+	}
 
 }

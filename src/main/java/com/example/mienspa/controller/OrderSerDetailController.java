@@ -50,7 +50,7 @@ public class OrderSerDetailController {
 				}
 				return new ResponseEntity<>(dtos, responseHeaders, HttpStatus.OK);
 			}else {
-				return  new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.ACCEPTED);
+				return  new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.NOT_FOUND);
 			}			
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
