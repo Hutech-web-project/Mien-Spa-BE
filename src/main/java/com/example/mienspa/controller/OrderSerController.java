@@ -202,7 +202,7 @@ public class OrderSerController {
 				}
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.CREATED);
 			}else {
-				return new ResponseEntity<>("Fail", responseHeaders, HttpStatus.ACCEPTED);
+				return new ResponseEntity<>("Fail", responseHeaders, HttpStatus.NOT_FOUND);
 			}
 			
 		} catch (Exception e) {
@@ -228,7 +228,7 @@ public class OrderSerController {
 				}		
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.OK);
 			}else {
-				return new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.ACCEPTED);
+				return new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.NOT_FOUND);
 			}		
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -266,7 +266,7 @@ public class OrderSerController {
 				service.delete(entity);
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.ACCEPTED);
+				return new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);

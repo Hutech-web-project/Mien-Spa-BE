@@ -6,7 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +55,8 @@ public class ProductController {
 	private ModelMapper modelMapper;
 
 	HttpHeaders responseHeaders = new HttpHeaders();
-	
+	Date date = Date.from(Instant.now());
+
 	ObjectMapper mapper = new ObjectMapper();
 
 	@GetMapping(value = "/Product")
@@ -84,16 +87,16 @@ public class ProductController {
 				ProductDTO dto = modelMapper.map(entity, ProductDTO.class);
 				dto.setCategory_id(entity.getCategory().getCateId());
 				return new ResponseEntity<>(dto, responseHeaders, HttpStatus.OK);
-			}else {
+			} else {
 				return new ResponseEntity<>("This product does not exist", responseHeaders, HttpStatus.ACCEPTED);
-			}	
+			}
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	@PostMapping(value = "/Product")
-	@PreAuthorize("hasRole('MODERATOR') and hasRole('PRODUCT') or hasRole('ADMIN')")
+//	@PreAuthorize("hasRole('MODERATOR') and hasRole('PRODUCT') or hasRole('ADMIN')")
 	public ResponseEntity<?> create(@RequestPart(required = false) String json,
 			@RequestPart(required = false) @ApiParam(required = true, value = "") MultipartFile file) {
 		try {
@@ -103,35 +106,40 @@ public class ProductController {
 				entityRequest.setProId(idProIdentity());
 				Category cate = Cateservice.getById(dto.getCategory_id());
 				entityRequest.setCategory(cate);
+				entityRequest.setCreatedAt(date);
 				Product entity = service.create(entityRequest);
 				ProductDTO dtoReponse = modelMapper.map(entity, ProductDTO.class);
 				return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.CREATED);
-			} else {               
+			} else {
 				ProductDTO dto = mapper.readValue(json, ProductDTO.class);
-				Product entityRequest = modelMapper.map(dto, Product.class);       
-   				entityRequest.setProId(idProIdentity());
+				Product entityRequest = modelMapper.map(dto, Product.class);
+				entityRequest.setProId(idProIdentity());
 				Category cate = Cateservice.getById(dto.getCategory_id());
 				entityRequest.setCategory(cate);
-				File folder = new File("Images/Products/"+entityRequest.getProId());
+				entityRequest.setCreatedAt(date);
+				File folder = new File("Images/Products/" + entityRequest.getProId());
 				folder.mkdirs();
 				Path path = Paths.get(folder.getPath());
 				InputStream inputStream = file.getInputStream();
 				Files.copy(inputStream, path.resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
-				entityRequest.setFeatureImgPath(entityRequest.getProId()+"/"+ file.getOriginalFilename().toLowerCase());
+				entityRequest
+						.setFeatureImgPath(entityRequest.getProId() + "/" + file.getOriginalFilename().toLowerCase());
 				Product entity = service.create(entityRequest);
 				ProductDTO dtoReponse = modelMapper.map(entity, ProductDTO.class);
 				return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.CREATED);
 			}
 		} catch (Exception e) {
+//			e.printStackTrace();
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
 	}
 
 	@PutMapping(value = "/Product/{id}")
-	@PreAuthorize("hasRole('MODERATOR') and hasRole('PRODUCT') or hasRole('ADMIN')")
+//	@PreAuthorize("hasRole('MODERATOR') and hasRole('PRODUCT') or hasRole('ADMIN')")
 	public ResponseEntity<?> update(@PathVariable("id") String id, @RequestPart(required = false) String json,
 			@RequestPart(required = false) @ApiParam(required = true, value = "") MultipartFile file) {
-		try {	
+		try {
 			if (service.getById(id) != null) {
 				if (file == null) {
 					ProductDTO dto = mapper.readValue(json, ProductDTO.class);
@@ -139,28 +147,32 @@ public class ProductController {
 					Category cate = Cateservice.getById(dto.getCategory_id());
 					entityRequest.setCategory(cate);
 					entityRequest.setProId(id);
+					entityRequest.setUpdatedAt(date);
 					Product entity = service.create(entityRequest);
 					ProductDTO dtoReponse = modelMapper.map(entity, ProductDTO.class);
 					dtoReponse.setCategory_id(entity.getCategory().getCateId());
 					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.OK);
-				} else {				
+				} else {
 					ProductDTO dto = mapper.readValue(json, ProductDTO.class);
-					//delete old image
-					if(dto.getFeatureImgPath() != null) {
-						File directoryToDelete = new File("Images/Products/"+id);
+					// delete old image
+					if (dto.getFeatureImgPath() != null) {
+						File directoryToDelete = new File("Images/Products/" + id);
 						FileSystemUtils.deleteRecursively(directoryToDelete);
 					}
-					
+
 					Product entityRequest = modelMapper.map(dto, Product.class);
 					Category cate = Cateservice.getById(dto.getCategory_id());
 					entityRequest.setCategory(cate);
 					entityRequest.setProId(id);
-					File folder=new File("Images/Products/"+entityRequest.getProId());
+					File folder = new File("Images/Products/" + entityRequest.getProId());
 					folder.mkdirs();
 					Path path = Paths.get(folder.getPath());
 					InputStream inputStream = file.getInputStream();
-					Files.copy(inputStream, path.resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
-					entityRequest.setFeatureImgPath(entityRequest.getProId()+"/"+file.getOriginalFilename().toLowerCase());
+					Files.copy(inputStream, path.resolve(file.getOriginalFilename()),
+							StandardCopyOption.REPLACE_EXISTING);
+					entityRequest.setFeatureImgPath(
+							entityRequest.getProId() + "/" + file.getOriginalFilename().toLowerCase());
+					entityRequest.setUpdatedAt(date);
 					Product entity = service.create(entityRequest);
 					ProductDTO dtoReponse = modelMapper.map(entity, ProductDTO.class);
 					dtoReponse.setCategory_id(entity.getCategory().getCateId());
@@ -174,18 +186,15 @@ public class ProductController {
 		}
 	}
 
-	@DeleteMapping(value = "/Product")
-	@PreAuthorize("hasRole('MODERATOR') and hasRole('PRODUCT') or hasRole('ADMIN')")
-	public ResponseEntity<?> deleteProduct(@RequestBody String id) {
-		try {		
+	@DeleteMapping(value = "/Product/{id}")
+//	@PreAuthorize("hasRole('MODERATOR') and hasRole('PRODUCT') or hasRole('ADMIN')")
+	public ResponseEntity<?> deleteProduct(@PathVariable("id") String id) {
+		try {
 			if (service.getById(id) != null) {
 				Product entity = service.getById(id);
-				if(entity.getFeatureImgPath() != null) {
-					File directoryToDelete = new File("Images/Products/"+entity.getProId());
-					FileSystemUtils.deleteRecursively(directoryToDelete);
-				}
-				service.delete(entity);
-				
+				entity.setIsDelete(true);
+				service.create(entity);
+
 				return new ResponseEntity<>(true, responseHeaders, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(false, responseHeaders, HttpStatus.NOT_FOUND);
@@ -194,7 +203,7 @@ public class ProductController {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	public String idProIdentity() {
 		LocalDate today = LocalDate.now();
 		int numberUser = service.getCountProByDate(today);
