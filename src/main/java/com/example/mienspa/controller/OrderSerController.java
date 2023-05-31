@@ -1,7 +1,9 @@
 package com.example.mienspa.controller;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,8 +27,10 @@ import com.example.mienspa.dto.OrdersSerDTO;
 import com.example.mienspa.dto.ServiceDetailsDTO;
 import com.example.mienspa.model.OrderSerDetail;
 import com.example.mienspa.model.OrdersSer;
+import com.example.mienspa.model.Serce;
 import com.example.mienspa.service.OrderSerDetailService;
 import com.example.mienspa.service.OrderSerService;
+import com.example.mienspa.service.SerceService;
 import com.example.mienspa.service.UserService;
 
 
@@ -40,13 +44,16 @@ public class OrderSerController {
 
 	@Autowired
 	private OrderSerDetailService OrSerDeSer;
+	
+	@Autowired
+	private SerceService seceSer;
 
 	@Autowired
 	private UserService UseSer;
 
 	@Autowired
 	private ModelMapper modelMapper;
-
+	Date date = Date.from(Instant.now());
 	HttpHeaders responseHeaders = new HttpHeaders();
 
 	@GetMapping(value = "/OrdersSer")
@@ -67,7 +74,7 @@ public class OrderSerController {
 							dto.setOrSerUserId(null);
 						}
 						for (OrderSerDetail order : entity.getOrderserdetails()) {
-							ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice());
+							ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice(),order.getSerce().getSeId());
 							listDetails.add(serce);
 						}
 						dto.setOrSer_Total(entity.getOrSerTotal());
@@ -99,7 +106,7 @@ public class OrderSerController {
 							dto.setOrSerUserId(null);
 						}				
 						for (OrderSerDetail order : entity.getOrderserdetails()) {
-							ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice());
+							ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice(),order.getSerce().getSeId());
 							listDetails.add(serce);
 						}
 						dto.setOrSer_Total(entity.getOrSerTotal());
@@ -128,7 +135,7 @@ public class OrderSerController {
 						if (entity.getUsers() != null) {
 							dto.setOrSerUserId(entity.getUsers().getUsId());
 							for (OrderSerDetail order : entity.getOrderserdetails()) {
-								ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice());
+								ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice(),order.getSerce().getSeId());
 								listDetails.add(serce);
 							}
 							dto.setlistSer(listDetails);
@@ -160,7 +167,7 @@ public class OrderSerController {
 					dto.setOrSerUserId(null);
 				}
 				for (OrderSerDetail order : entity.getOrderserdetails()) {
-					ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice());
+					ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice(),order.getSerce().getSeId());
 					listDetails.add(serce);
 				}
 				dto.setlistSer(listDetails);
@@ -186,10 +193,12 @@ public class OrderSerController {
 				OrdersSer entityRequest = modelMapper.map(dto, OrdersSer.class);
 				entityRequest.setOrSerId(idOrSerIentity());
 				entityRequest.setUsers(UseSer.getById(dto.getOrSerUserId()));
+				entityRequest.setCreatedAt(date);
 				OrdersSer entity = service.create(entityRequest);
 				for (ServiceDetailsDTO ser : dto.getlistSer()) {
 					if(ser != null) {
-						OrderSerDetail orderSerDetail = new OrderSerDetail(entity,ser.getOrdSerServiceName(),ser.getOrdSerServicePrice());
+						Serce serce = seceSer.getById(ser.getOrdSerServiceId());
+						OrderSerDetail orderSerDetail = new OrderSerDetail(entity,serce,ser.getOrdSerServiceName(),ser.getOrdSerServicePrice());
 						OrSerDeSer.create(orderSerDetail);
 					}
 				}			
@@ -202,7 +211,7 @@ public class OrderSerController {
 				}
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.CREATED);
 			}else {
-				return new ResponseEntity<>("Fail", responseHeaders, HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("Fail", responseHeaders, HttpStatus.ACCEPTED);
 			}
 			
 		} catch (Exception e) {
@@ -220,6 +229,7 @@ public class OrderSerController {
 				if(dto.getOrSerUserId() != null) {
 					entityRequest.setUsers(UseSer.getById(dto.getOrSerUserId()));
 				}	
+				entityRequest.setUpdatedAt(date);
 				entityRequest.setOrSerId(id);
 				OrdersSer entity = service.create(entityRequest);
 				OrdersSerDTO dtoReponse = modelMapper.map(entity, OrdersSerDTO.class);
@@ -228,7 +238,7 @@ public class OrderSerController {
 				}		
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.OK);
 			}else {
-				return new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.ACCEPTED);
 			}		
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -266,7 +276,7 @@ public class OrderSerController {
 				service.delete(entity);
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.OK);
 			} else {
-				return new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.NOT_FOUND);
+				return new ResponseEntity<>("Service order does not exist", responseHeaders, HttpStatus.ACCEPTED);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>("Connect server fail", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);

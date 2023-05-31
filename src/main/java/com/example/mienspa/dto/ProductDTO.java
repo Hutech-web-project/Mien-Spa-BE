@@ -4,7 +4,7 @@ public class ProductDTO extends AbstractDTO<ProductDTO>{
 	private String proId;
 	private Integer category_id ;
 	private String proName;
-	private Integer proPrice;
+	private Float proPrice;
 	private String featureImgPath;
 	private String proContent;
 	private String proBrand;
@@ -16,7 +16,7 @@ public class ProductDTO extends AbstractDTO<ProductDTO>{
 	public ProductDTO() {
 	}
 
-	public ProductDTO(String proId, Integer category_id, String proName, Integer proPrice, String featureImgPath,
+	public ProductDTO(String proId, Integer category_id, String proName, Float proPrice, String featureImgPath,
 			String proContent, String proBrand,  Boolean proTurnOn, Boolean isDelete) {
 		super();
 		this.proId = proId;
@@ -49,10 +49,10 @@ public class ProductDTO extends AbstractDTO<ProductDTO>{
 	public void setProName(String proName) {
 		this.proName = proName;
 	}
-	public Integer getProPrice() {
+	public Float getProPrice() {
 		return proPrice;
 	}
-	public void setProPrice(Integer proPrice) {
+	public void setProPrice(Float proPrice) {
 		this.proPrice = proPrice;
 	}
 	public String getFeatureImgPath() {

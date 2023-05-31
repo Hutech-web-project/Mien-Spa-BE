@@ -6,7 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -47,6 +49,7 @@ public class SerceController {
 	private ModelMapper modelMapper;
 
 	HttpHeaders responseHeaders = new HttpHeaders();
+	Date date = Date.from(Instant.now());
 	ObjectMapper mapper = new ObjectMapper();
 	
 	@GetMapping(value = "/Serce")
@@ -89,6 +92,7 @@ public class SerceController {
 				SerceDTO dto = mapper.readValue(json, SerceDTO.class);
 				Serce entityRequest = modelMapper.map(dto, Serce.class);
 				entityRequest.setSeId(idSerceIdentity());
+				entityRequest.setCreatedAt(date);
 				Serce entity = service.create(entityRequest);
 				SerceDTO dtoReponse = modelMapper.map(entity, SerceDTO.class);
 				return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.CREATED);
@@ -103,6 +107,7 @@ public class SerceController {
 				InputStream inputStream = file.getInputStream();
 				Files.copy(inputStream, path.resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
 				entityRequest.setSeImage(entityRequest.getSeId()+"/"+file.getOriginalFilename().toLowerCase());
+				entityRequest.setCreatedAt(date);
 				Serce entity = service.create(entityRequest);
 				SerceDTO dtoReponse = modelMapper.map(entity, SerceDTO.class);
 				return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.CREATED);
@@ -122,6 +127,7 @@ public class SerceController {
 					SerceDTO dto = mapper.readValue(json, SerceDTO.class);
 					Serce entityRequest = modelMapper.map(dto, Serce.class);
 					entityRequest.setSeId(id);
+					entityRequest.setUpdatedAt(date);
 					Serce entity = service.create(entityRequest);
 					SerceDTO dtoReponse = modelMapper.map(entity, SerceDTO.class);
 					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.NOT_FOUND);
@@ -141,6 +147,7 @@ public class SerceController {
 					Files.copy(inputStream, path.resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
 					entityRequest.setSeImage(entityRequest.getSeId()+"/"+file.getOriginalFilename().toLowerCase());
 					entityRequest.setSeId(id);
+					entityRequest.setUpdatedAt(date);
 					Serce entity = service.create(entityRequest);
 					SerceDTO dtoReponse = modelMapper.map(entity, SerceDTO.class);
 					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.NOT_FOUND);

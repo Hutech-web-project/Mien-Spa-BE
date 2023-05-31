@@ -19,7 +19,7 @@ public class Serce implements java.io.Serializable {
 
 	private String seId;
 	private String seName;
-	private int sePrice;
+	private float sePrice;
 	private String seDescription;
 	private String seNote;
 	private String seImage;
@@ -31,7 +31,7 @@ public class Serce implements java.io.Serializable {
 	public Serce() {
 	}
 
-	public Serce(String seId, String seName, int sePrice, String seDescription) {
+	public Serce(String seId, String seName, float sePrice, String seDescription) {
 		this.seId = seId;
 		this.seName = seName;
 		this.sePrice = sePrice;
@@ -73,11 +73,11 @@ public class Serce implements java.io.Serializable {
 	}
 
 	@Column(name = "se_Price", nullable = false)
-	public int getSePrice() {
+	public float getSePrice() {
 		return this.sePrice;
 	}
 
-	public void setSePrice(int sePrice) {
+	public void setSePrice(float sePrice) {
 		this.sePrice = sePrice;
 	}
 
