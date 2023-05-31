@@ -61,7 +61,7 @@ public class UserController {
 	ObjectMapper mapper = new ObjectMapper();
 	
 	@GetMapping(value = "/Users")
-	@PreAuthorize("hasRole('ACCOUNT') or hasRole('ADMIN')")
+//	@PreAuthorize("hasRole('ACCOUNT') or hasRole('ADMIN')")
 	public ResponseEntity<?> getAll(){
 		try {
 			List<Users> entityList = service.getAll();
