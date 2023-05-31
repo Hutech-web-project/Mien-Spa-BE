@@ -27,10 +27,8 @@ import com.example.mienspa.dto.OrderProDTO;
 import com.example.mienspa.dto.ProductDetailsDTO;
 import com.example.mienspa.model.OrdersPro;
 import com.example.mienspa.model.OrdersProDetail;
-import com.example.mienspa.model.Product;
 import com.example.mienspa.service.OrderProDetailService;
 import com.example.mienspa.service.OrderProService;
-import com.example.mienspa.service.ProductService;
 import com.example.mienspa.service.UserService;
 
 
@@ -45,9 +43,6 @@ public class OrderProController {
 	
 	@Autowired
 	private OrderProDetailService DeProSer;
-	
-	@Autowired
-	private ProductService proSer;
 	
 	@Autowired
 	private UserService UseSer;
@@ -102,7 +97,7 @@ public class OrderProController {
 
 						}
 						for (OrdersProDetail order : entity.getOrdersprodetails()) {
-							ProductDetailsDTO detail = new  ProductDetailsDTO(order.getOrdProProductName(),order.getOrdProProductPrice(),order.getOrdProQuantity(),order.getProduct().getProId());
+							ProductDetailsDTO detail = new  ProductDetailsDTO(order.getOrdProProductName(),order.getOrdProProductPrice(),order.getOrdProQuantity());
 							listDetails.add(detail);
 						}
 						dto.setOrProTotal(entity.getOrProTotal());
@@ -181,11 +176,8 @@ public class OrderProController {
 				OrdersPro entity = service.create(entityRequest);
 				for (ProductDetailsDTO item : dto.getListProId()) {
 					if(!item.getProProductName().isEmpty() && item.getProQuantity()!= 0 && item.getProProductPrice() != 0) {
-						if(proSer.getById(item.getProductId())!= null) {
-							Product product = proSer.getById(item.getProductId());
-							OrdersProDetail OrProDeEntity = new OrdersProDetail(entity,product,item.getProProductName(),item.getProProductPrice(),item.getProQuantity());
-							DeProSer.create(OrProDeEntity);
-						}
+						OrdersProDetail OrProDeEntity = new OrdersProDetail(entity,item.getProProductName(),item.getProProductPrice(),item.getProQuantity());
+						DeProSer.create(OrProDeEntity);
 					}
 				}			
 				return new ResponseEntity<>("Success", responseHeaders, HttpStatus.CREATED);
