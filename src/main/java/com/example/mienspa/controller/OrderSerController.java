@@ -25,10 +25,8 @@ import com.example.mienspa.dto.OrdersSerDTO;
 import com.example.mienspa.dto.ServiceDetailsDTO;
 import com.example.mienspa.model.OrderSerDetail;
 import com.example.mienspa.model.OrdersSer;
-import com.example.mienspa.model.Serce;
 import com.example.mienspa.service.OrderSerDetailService;
 import com.example.mienspa.service.OrderSerService;
-import com.example.mienspa.service.SerceService;
 import com.example.mienspa.service.UserService;
 
 
@@ -42,9 +40,6 @@ public class OrderSerController {
 
 	@Autowired
 	private OrderSerDetailService OrSerDeSer;
-	
-	@Autowired
-	private SerceService seceSer;
 
 	@Autowired
 	private UserService UseSer;
@@ -72,7 +67,7 @@ public class OrderSerController {
 							dto.setOrSerUserId(null);
 						}
 						for (OrderSerDetail order : entity.getOrderserdetails()) {
-							ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice(),order.getSerce().getSeId());
+							ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice());
 							listDetails.add(serce);
 						}
 						dto.setOrSer_Total(entity.getOrSerTotal());
@@ -104,7 +99,7 @@ public class OrderSerController {
 							dto.setOrSerUserId(null);
 						}				
 						for (OrderSerDetail order : entity.getOrderserdetails()) {
-							ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice(),order.getSerce().getSeId());
+							ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice());
 							listDetails.add(serce);
 						}
 						dto.setOrSer_Total(entity.getOrSerTotal());
@@ -133,7 +128,7 @@ public class OrderSerController {
 						if (entity.getUsers() != null) {
 							dto.setOrSerUserId(entity.getUsers().getUsId());
 							for (OrderSerDetail order : entity.getOrderserdetails()) {
-								ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice(),order.getSerce().getSeId());
+								ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice());
 								listDetails.add(serce);
 							}
 							dto.setlistSer(listDetails);
@@ -165,7 +160,7 @@ public class OrderSerController {
 					dto.setOrSerUserId(null);
 				}
 				for (OrderSerDetail order : entity.getOrderserdetails()) {
-					ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice(),order.getSerce().getSeId());
+					ServiceDetailsDTO serce = new ServiceDetailsDTO(order.getOrdSerServiceName(),order.getOrdSerServicePrice());
 					listDetails.add(serce);
 				}
 				dto.setlistSer(listDetails);
@@ -194,8 +189,7 @@ public class OrderSerController {
 				OrdersSer entity = service.create(entityRequest);
 				for (ServiceDetailsDTO ser : dto.getlistSer()) {
 					if(ser != null) {
-						Serce serce = seceSer.getById(ser.getOrdSerServiceId());
-						OrderSerDetail orderSerDetail = new OrderSerDetail(entity,serce,ser.getOrdSerServiceName(),ser.getOrdSerServicePrice());
+						OrderSerDetail orderSerDetail = new OrderSerDetail(entity,ser.getOrdSerServiceName(),ser.getOrdSerServicePrice());
 						OrSerDeSer.create(orderSerDetail);
 					}
 				}			
