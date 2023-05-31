@@ -23,7 +23,7 @@ public class Product implements java.io.Serializable {
 	private String proId;
 	private Category category;
 	private String proName;
-	private int proPrice;
+	private float proPrice;
 	private String featureImgPath;
 	private String proContent;
 	private String proBrand;
@@ -90,11 +90,11 @@ public class Product implements java.io.Serializable {
 	}
 
 	@Column(name = "pro_price", nullable = false)
-	public int getProPrice() {
+	public float getProPrice() {
 		return this.proPrice;
 	}
 
-	public void setProPrice(int proPrice) {
+	public void setProPrice(float proPrice) {
 		this.proPrice = proPrice;
 	}
 

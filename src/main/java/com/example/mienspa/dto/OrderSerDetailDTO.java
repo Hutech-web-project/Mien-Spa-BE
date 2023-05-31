@@ -4,7 +4,7 @@ public class OrderSerDetailDTO extends AbstractDTO<OrderSerDetailDTO>{
 	private Integer ordSerId;
 	private String ordersSerOrderId;
 	private String ordSerServiceName;
-	private int ordSerServicePrice;
+	private Float ordSerServicePrice;
 	
 	
 	public OrderSerDetailDTO() {
@@ -12,7 +12,7 @@ public class OrderSerDetailDTO extends AbstractDTO<OrderSerDetailDTO>{
 
 
 	public OrderSerDetailDTO(Integer ordSerId, String ordersSerOrderId, String ordSerServiceName,
-			int ordSerServicePrice) {
+			Float ordSerServicePrice) {
 		super();
 		this.ordSerId = ordSerId;
 		this.ordersSerOrderId = ordersSerOrderId;
@@ -51,12 +51,12 @@ public class OrderSerDetailDTO extends AbstractDTO<OrderSerDetailDTO>{
 	}
 
 
-	public int getOrdSerServicePrice() {
+	public Float getOrdSerServicePrice() {
 		return ordSerServicePrice;
 	}
 
 
-	public void setOrdSerServicePrice(int ordSerServicePrice) {
+	public void setOrdSerServicePrice(Float ordSerServicePrice) {
 		this.ordSerServicePrice = ordSerServicePrice;
 	}
 }

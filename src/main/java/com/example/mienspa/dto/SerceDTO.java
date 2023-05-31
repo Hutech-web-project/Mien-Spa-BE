@@ -4,7 +4,7 @@ package com.example.mienspa.dto;
 public class SerceDTO extends AbstractDTO<SerceDTO>{
 	private String seId;
 	private String seName;
-	private Integer sePrice;
+	private Float sePrice;
 	private String seDescription;
 	private String seNote;
 	private String seImage;
@@ -16,7 +16,7 @@ public class SerceDTO extends AbstractDTO<SerceDTO>{
 	public SerceDTO() {
 	}
 
-	public SerceDTO(String seId, String seName, Integer sePrice, String seDescription, String seNote, String seImage,
+	public SerceDTO(String seId, String seName, Float sePrice, String seDescription, String seNote, String seImage,
 			Boolean seTurnOn, Boolean isDelete) {
 		super();
 		this.seId = seId;
@@ -45,11 +45,11 @@ public class SerceDTO extends AbstractDTO<SerceDTO>{
 		this.seName = seName;
 	}
 
-	public Integer getSePrice() {
+	public Float getSePrice() {
 		return sePrice;
 	}
 
-	public void setSePrice(Integer sePrice) {
+	public void setSePrice(Float sePrice) {
 		this.sePrice = sePrice;
 	}
 

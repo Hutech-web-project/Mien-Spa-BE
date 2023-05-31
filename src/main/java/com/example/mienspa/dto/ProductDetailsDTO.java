@@ -2,18 +2,20 @@ package com.example.mienspa.dto;
 
 public class ProductDetailsDTO {
 	private String ProProductName;
-	private int ProProductPrice;
+	private float ProProductPrice;
 	private int ProQuantity;
+	private String ProductId;
 	
 	public ProductDetailsDTO() {
 		super();
 	}
-	
-	public ProductDetailsDTO(String proProductName, int proProductPrice, int proQuantity) {
+
+	public ProductDetailsDTO(String proProductName, float proProductPrice, int proQuantity, String productId) {
 		super();
 		ProProductName = proProductName;
 		ProProductPrice = proProductPrice;
 		ProQuantity = proQuantity;
+		ProductId = productId;
 	}
 
 	public String getProProductName() {
@@ -24,11 +26,11 @@ public class ProductDetailsDTO {
 		ProProductName = proProductName;
 	}
 
-	public int getProProductPrice() {
+	public float getProProductPrice() {
 		return ProProductPrice;
 	}
 
-	public void setProProductPrice(int proProductPrice) {
+	public void setProProductPrice(float proProductPrice) {
 		ProProductPrice = proProductPrice;
 	}
 
@@ -39,6 +41,13 @@ public class ProductDetailsDTO {
 	public void setProQuantity(int proQuantity) {
 		ProQuantity = proQuantity;
 	}
-	
+
+	public String getProductId() {
+		return ProductId;
+	}
+
+	public void setProductId(String productId) {
+		ProductId = productId;
+	}
 	
 }

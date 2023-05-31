@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,6 +59,7 @@ public class UserController {
 	@Autowired
 	PasswordEncoder encoder;
 	
+	Date date = Date.from(Instant.now());
 	HttpHeaders responseHeaders = new HttpHeaders();
 	ObjectMapper mapper = new ObjectMapper();
 	
@@ -110,12 +113,13 @@ public class UserController {
 	
 	
 	@PostMapping(value = "/Users")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') and hasRole('ACCOUNT') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('MODERATOR') and hasRole('ACCOUNT') or hasRole('ADMIN')")
 	public ResponseEntity<UsersDTO> create(@RequestBody UsersDTO dto) {
 		try {
 			String hash = BCrypt.hashpw(dto.getUsPassword(), BCrypt.gensalt(12));
 			dto.setUsPassword(hash);
 	        Users entityResquest = modelMapper.map(dto, Users.class);
+	        entityResquest.setCreatedAt(date);
 	        Users entity = service.create(entityResquest);
 	        UsersDTO dtoReponse = modelMapper.map(entity, UsersDTO.class);
 			return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.CREATED);
@@ -140,6 +144,7 @@ public class UserController {
 						dto.setUsPassword(encoder.encode(dto.getUsPassword()));
 					}
 					Users entityRequest = modelMapper.map(dto, Users.class);
+					entityRequest.setUpdatedAt(date);
 					Users entity = service.create(entityRequest);
 				    UsersDTO dtoReponse = modelMapper.map(entity, UsersDTO.class);
 					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.NOT_FOUND);
@@ -162,6 +167,7 @@ public class UserController {
 					InputStream inputStream = file.getInputStream();
 					Files.copy(inputStream, path.resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
 					entityRequest.setUsImage(entityRequest.getUsId()+"/"+file.getOriginalFilename().toLowerCase());
+					entityRequest.setUpdatedAt(date);
 					Users entity = service.create(entityRequest);
 					UsersDTO dtoReponse = modelMapper.map(entity, UsersDTO.class);
 					return new ResponseEntity<>(dtoReponse, responseHeaders, HttpStatus.NOT_FOUND);
